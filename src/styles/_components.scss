@@ -1,0 +1,72 @@
+.searchbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  input {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+    color: #000000;
+  }
+  button {
+    background: #FFFFFF;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    &:hover {
+      filter: brightness(1.05);
+    }
+  }
+  .suggests {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    max-height: 160px;
+    overflow: auto;
+    li {
+      padding: 8px 10px;
+      cursor: pointer;
+      border-radius: 6px;
+      &:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+    }
+  }
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 14px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.saved-locations {
+  margin-top: 1rem;
+
+  h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+  .cities {
+    display: flex;
+  }
+}
+.remove-btn {
+        background: transparent;
+        border: none;
+        color: #c0392b;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: color 0.2s ease;
+
+        &:hover {
+          color: #e74c3c;
+          border: 1px solid black;
+        }
+      }

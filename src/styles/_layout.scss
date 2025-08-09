@@ -1,0 +1,21 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+  color: #000000;
+  -webkit-font-smoothing: antialiased;
+}
+.container {
+  max-width: 980px;
+  margin: 36px auto;
+  padding: 20px;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
