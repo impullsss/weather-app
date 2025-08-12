@@ -37,29 +37,24 @@
   }
 }
 
-.card {
+.locations-chips {
   background: rgba(255, 255, 255, 0.03);
   border-radius: 12px;
   padding: 16px;
-  margin-top: 14px;
   display: flex;
   gap: 20px;
-  align-items: center;
+  flex-direction: column;
 }
-.saved-locations {
-  margin-top: 1rem;
-
-  h3 {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-  }
-  .cities {
-    display: flex;
-  }
+.chip {
+  background-color: #f9f9f9;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  justify-content: space-between;
+  max-width: 33%;
 }
 .remove-btn {
         background: transparent;
-        border: none;
         color: #c0392b;
         font-size: 1rem;
         cursor: pointer;

@@ -1,31 +1,31 @@
 import React, { useState, useEffect } from "react";
-import SavedLocations from "./components/SavedLocations";
+import LocationsChips from "./components/LocationsChips";
 import useDebounce from "./hooks/useDebounce";
 import MapView from "./components/MapView";
+import { getLocations, saveLocation, removeLocation as removeLoc } from "./utils/storage";
 import "./index.scss";
 
 const WEATHER_API_KEY = import.meta.env.VITE_OPENWEATHER_KEY;
 const DADATA_API_KEY = import.meta.env.VITE_DADATA_KEY;
 
 const WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/weather";
-const DADATA_URL =
-  "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address";
+const DADATA_URL = "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address";
 
 function App() {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [weather, setWeather] = useState(null);
-  const [savedCities, setSavedCities] = useState(
-    JSON.parse(localStorage.getItem("savedCities")) || []
-  );
+  const [savedCities, setSavedCities] = useState(getLocations());
   const [error, setError] = useState("");
+
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [loadingWeather, setLoadingWeather] = useState(false);
 
   const debouncedQuery = useDebounce(query, 500);
 
   const removeCity = (cityToRemove) => {
-    const updated = savedCities.filter((city) => city !== cityToRemove);
-    setSavedCities(updated);
-    localStorage.setItem("savedCities", JSON.stringify(updated));
+    removeLoc(cityToRemove);
+    setSavedCities(getLocations());
   };
 
   // Запрос подсказок от Dadata
@@ -35,6 +35,7 @@ function App() {
       return;
     }
 
+    setLoadingSuggestions(true);
     fetch(DADATA_URL, {
       method: "POST",
       headers: {
@@ -51,13 +52,15 @@ function App() {
           .filter(Boolean);
         setSuggestions([...new Set(cities)]);
       })
-      .catch(() => setSuggestions([]));
+      .catch(() => setSuggestions([]))
+      .finally(() => setLoadingSuggestions(false));
   }, [debouncedQuery]);
 
   // Получение погоды по названию города
   const fetchWeatherByCity = (city) => {
     if (!city) return;
 
+    setLoadingWeather(true);
     fetch(
       `${WEATHER_API_URL}?q=${city}&appid=${WEATHER_API_KEY}&units=metric&lang=ru`
     )
@@ -74,7 +77,8 @@ function App() {
       .catch(() => {
         setWeather(null);
         setError("Ошибка запроса");
-      });
+      })
+      .finally(() => setLoadingWeather(false));
   };
 
   // Получение погоды по геолокации
@@ -84,6 +88,7 @@ function App() {
       return;
     }
 
+    setLoadingWeather(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
@@ -98,18 +103,21 @@ function App() {
             } else {
               setError("Не удалось определить местоположение");
             }
-          });
+          })
+          .finally(() => setLoadingWeather(false));
       },
-      () => setError("Ошибка получения геолокации")
+      () => {
+        setError("Ошибка получения геолокации");
+        setLoadingWeather(false);
+      }
     );
   };
 
   // Сохранение города в localStorage
-  const saveCity = () => {
+  const handleSaveCity = () => {
     if (weather?.name && !savedCities.includes(weather.name)) {
-      const updated = [...savedCities, weather.name];
-      setSavedCities(updated);
-      localStorage.setItem("savedCities", JSON.stringify(updated));
+      saveLocation(weather.name);
+      setSavedCities(getLocations());
     }
   };
 
@@ -129,7 +137,8 @@ function App() {
         </button>
         <button onClick={getUserLocation}>Моё местоположение</button>
 
-        {suggestions.length > 0 && (
+        {loadingSuggestions && <p>Загрузка подсказок...</p>}
+        {suggestions.length > 0 && !loadingSuggestions && (
           <ul className="suggestions">
             {suggestions.map((s, i) => (
               <li key={i} onClick={() => fetchWeatherByCity(s)}>
@@ -140,7 +149,7 @@ function App() {
         )}
       </div>
 
-      <SavedLocations
+      <LocationsChips
         cities={savedCities}
         onSelect={fetchWeatherByCity}
         onRemove={removeCity}
@@ -148,13 +157,14 @@ function App() {
 
       {error && <p className="error">{error}</p>}
 
-      {weather && (
+      {loadingWeather && <p>Загрузка погоды...</p>}
+      {weather && !loadingWeather && (
         <div className="weather-info">
           <h2>{weather.name}</h2>
           <p>Температура: {weather.main.temp}°C</p>
           <p>Влажность: {weather.main.humidity}%</p>
           <p>Ветер: {weather.wind.speed} м/с</p>
-          <button onClick={saveCity}>Сохранить город</button>
+          <button onClick={handleSaveCity}>Сохранить город</button>
 
           <MapView lat={weather.coord.lat} lon={weather.coord.lon} />
         </div>
