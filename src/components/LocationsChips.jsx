@@ -1,4 +1,3 @@
-// src/components/LocationsChips.jsx
 import React from "react";
 
 export default function LocationsChips({ cities, onSelect, onRemove }) {

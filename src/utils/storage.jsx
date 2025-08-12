@@ -1,4 +1,3 @@
-// src/utils/storage.js
 const KEY = 'saved_locations_v1';
 
 export function getLocations() {
