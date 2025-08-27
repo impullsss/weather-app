@@ -1,6 +1,6 @@
 #  Weather App
 
-Простое React-приложение для просмотра текущей погоды в выбранном городе.  
+React-приложение для просмотра текущей погоды в выбранном городе.  
 Данные получаются через API **OpenWeather** и **Dadata**, а местоположение отображается на Яндекс.Картах.
 
  **Демо:** [https://impullsss.github.io/weather-app/](https://impullsss.github.io/weather-app/)
